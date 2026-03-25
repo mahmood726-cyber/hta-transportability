@@ -2,10 +2,10 @@
 
 ## The Clinical Transportability Engine: Quantifying the Generalizability Gap between RCT Evidence and Real-World Populations for Health Technology Assessment
 
-**Authors:** Mahmood Ul Hassan
-**Affiliation:** Independent Researcher
-**Correspondence:** Mahmood Ul Hassan (Independent Researcher)
-**ORCID:** [To be added]
+**Authors:** Mahmood Ahmad
+**Affiliation:** Royal Free Hospital, London, United Kingdom
+**Correspondence:** Mahmood Ahmad (mahmood.ahmad2@nhs.net)
+**ORCID:** 0009-0003-7781-4478
 
 ---
 

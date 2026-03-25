@@ -99,5 +99,94 @@
         }
     });
 </script>
+<script>
+window.__webrValidationConfig = {
+    appName: 'HTA Transportability Dashboard',
+    intro: 'Checks that transportability counts, percentages, and leakage labels remain aligned.',
+    async ready(h) {
+        await h.waitFor(() => !!window.Chart && !!Chart.getChart(document.getElementById('transportChart')));
+    },
+    tests: [
+        {
+            name: 'Chart counts match the displayed total number of linked analyses',
+            collect(h) {
+                const chart = Chart.getChart(document.getElementById('transportChart'));
+                return {
+                    counts: chart.data.datasets[0].data.map(Number),
+                    total: h.parseNumber(document.querySelector('.stat-card .stat-val').textContent),
+                };
+            },
+            r(payload) {
+                return `
+counts <- c(${payload.counts.join(', ')})
+total <- ${payload.total}
+if (abs(sum(counts) - total) < 1e-8) {
+  "PASS|Transportability category counts sum to the displayed linked-analysis total."
+} else {
+  paste0("FAIL|Category counts sum to ", sum(counts), " while the dashboard reports ", total, " analyses.")
+}`.trim();
+            }
+        },
+        {
+            name: 'Headline percentages agree with the pie-chart shares',
+            collect(h) {
+                const chart = Chart.getChart(document.getElementById('transportChart'));
+                const counts = chart.data.datasets[0].data.map(Number);
+                const stats = Array.from(document.querySelectorAll('.stat-card .stat-val')).slice(1);
+                return {
+                    counts,
+                    total: counts.reduce((sum, value) => sum + value, 0),
+                    displayed: stats.map((node) => h.parseNumber(node.textContent)),
+                };
+            },
+            r(payload) {
+                return `
+counts <- c(${payload.counts.join(', ')})
+displayed <- c(${payload.displayed.join(', ')})
+expected <- round(c(counts[1], counts[3]) / sum(counts) * 100, 1)
+if (all(abs(expected - displayed) < 0.11)) {
+  "PASS|The robust-transport and high-leakage percentages match the pie-chart shares."
+} else {
+  paste0(
+    "FAIL|Expected headline percentages ",
+    paste(expected, collapse = ", "),
+    " but found ",
+    paste(displayed, collapse = ", "),
+    "."
+  )
+}`.trim();
+            }
+        },
+        {
+            name: 'Leakage warning labels remain consistent with the example thresholds',
+            collect() {
+                const rows = Array.from(document.querySelectorAll('tbody tr')).map((row) => {
+                    const cells = row.querySelectorAll('td');
+                    return {
+                        leakage: Number(cells[2].textContent.replace('%', '').trim()),
+                        rating: cells[3].textContent.trim(),
+                    };
+                });
+                return {
+                    leakage: rows.map((row) => row.leakage),
+                    ratings: rows.map((row) => row.rating),
+                };
+            },
+            r(payload, h) {
+                return `
+leakage <- c(${payload.leakage.join(', ')})
+ratings <- ${h.rVector(payload.ratings)}
+expected <- ifelse(leakage <= 5, "HIGH", ifelse(leakage < 20, "MEDIUM", "LOW"))
+if (all(expected == ratings)) {
+  "PASS|The warning-table ratings still follow the low / medium / high leakage thresholds used in the examples."
+} else {
+  paste0("FAIL|Expected ratings ", paste(expected, collapse = ", "), " but found ", paste(ratings, collapse = ", "), ".")
+}`.trim();
+            }
+        }
+    ]
+};
+</script>
+<script src="../_shared/webr-validation.js"></script>
 </body>
 </html>
