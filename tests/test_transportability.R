@@ -158,4 +158,35 @@ if (!is.null(csv_path)) {
               100*mean(dt$transport_class == "LOW (High Leakage)")))
 }
 
+# ============================================================================
+# 6. F1000 REVIEWER EXAMPLE DATASET INTEGRITY
+# ============================================================================
+# Locks the schema/shape of the small dataset that ships with the repo so the
+# F1000 reviewer reproduction artifact can't silently rot.
+
+example_path <- if (file.exists("f1000_artifacts/example_dataset.csv")) {
+  "f1000_artifacts/example_dataset.csv"
+} else if (file.exists("../f1000_artifacts/example_dataset.csv")) {
+  "../f1000_artifacts/example_dataset.csv"
+} else NULL
+
+if (!is.null(example_path)) {
+  ex <- fread(example_path)
+
+  test_that("Example dataset has the documented schema", {
+    required <- c("review_id", "dataset", "analysis_key", "analysis_name",
+                  "k", "yi", "se", "tau2", "mean_year", "mean_ctrl_risk",
+                  "mean_total_n")
+    expect_equal(setdiff(required, names(ex)), character(0))
+  })
+
+  test_that("Example dataset has at least one row and finite effects", {
+    expect_true(nrow(ex) >= 1)
+    expect_true(all(is.finite(ex$yi)))
+    expect_true(all(is.finite(ex$se) & ex$se > 0))
+    expect_true(all(ex$k >= 2))                # review-level rows pool >=2 studies
+    expect_true(all(ex$mean_ctrl_risk >= 0 & ex$mean_ctrl_risk <= 1))
+  })
+}
+
 cat("All Transportability tests complete.\n")

@@ -60,10 +60,20 @@ If you prefer a system R installation, the suite requires R ≥ 4.3 with
 See `transportability_pipeline.md` for the full step-by-step description,
 including the optional CT.gov rate-limit / pagination environment variables.
 
+For one-command convenience, see the `Makefile`:
+
+```bash
+make test           # run the testthat suite
+make pipeline       # audit -> scaffold -> queries -> aggregate -> merge -> cv -> cte
+make help           # list all targets
+```
+
 ## Tests
 
 ```bash
 Rscript tests/run_tests.R
+# or
+make test
 ```
 
 The suite validates the SE-from-CI formula, the CTE penalty bound, transport
