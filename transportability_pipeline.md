@@ -59,6 +59,16 @@ This pipeline uses Pairwise70 study data and open trial registries to approximat
      - `CTGOV_DOMAIN_SLEEP_MS` (default: 200)
      - `CTGOV_DOMAIN_LIST` (comma-separated domains)
 
+11) CTE penalty model and transport-class assignment
+   - `cte_penalty_model.R`
+   - Inputs: `transportability_target_merge.csv` (from step 5)
+   - Outputs: `output/transportability_results.csv` with per-analysis
+     `predicted_mag`, `cte_penalty`, `efficacy_leakage`, and `transport_class`.
+   - Thresholds (mirrored in `paper/cte_manuscript.md` and `tests/test_transportability.R`):
+     - HIGH (Robust):     `cte_penalty >= 0.90`
+     - MEDIUM (Stable):   `0.70 <= cte_penalty < 0.90`
+     - LOW (High Leakage):`cte_penalty < 0.70`
+
 ## Notes
 - ClinicalTrials.gov API rate limits apply; `06_ctgov_fetch.R` uses pagination and caches results per review.
 - If you want to target a specific clinical domain, update `ctgov_query_terms.csv` to keep queries precise.

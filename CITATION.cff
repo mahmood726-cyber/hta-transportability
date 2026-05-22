@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "HTA Transportability Engine"
+abstract: >
+  Reproducible R pipeline for assessing transportability of meta-analytic
+  treatment effects from Pairwise70 systematic reviews to target populations
+  approximated by ClinicalTrials.gov registry covariates. Computes a
+  Covariate Transportability Estimator (CTE) penalty and a leakage /
+  robustness classification per analysis.
+type: software
+license: MIT
+repository-code: "https://github.com/mahmood726-cyber/hta-transportability"
+keywords:
+  - HTA
+  - transportability
+  - meta-analysis
+  - reproducibility
+  - F1000Research
+authors:
+  - family-names: Ahmad
+    given-names: Mahmood
+    affiliation: Royal Free Hospital
+  - family-names: Kumar
+    given-names: Niraj
+    affiliation: Royal Free Hospital
+  - family-names: Dar
+    given-names: Bilaal
+    affiliation: King's College Medical School
+  - family-names: Khan
+    given-names: Laiba
+    affiliation: Royal Free Hospital
+  - family-names: Woo
+    given-names: Andrew
+    affiliation: St George's Medical School

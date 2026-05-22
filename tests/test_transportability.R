@@ -70,17 +70,22 @@ test_that("Efficacy leakage is (1 - cte_penalty) * 100", {
 # 3. TRANSPORT CLASS ASSIGNMENT TESTS
 # ============================================================================
 
-test_that("Transport class thresholds are correct", {
+test_that("Transport class thresholds match cte_penalty_model.R and paper/cte_manuscript.md", {
+  # HIGH: cte_penalty >= 0.90
+  # MEDIUM: 0.70 <= cte_penalty < 0.90
+  # LOW:   cte_penalty < 0.70
   classify_transport <- function(cte_penalty) {
-    if (cte_penalty >= 0.85) return("HIGH (Robust)")
+    if (cte_penalty >= 0.90) return("HIGH (Robust)")
     if (cte_penalty >= 0.70) return("MEDIUM (Stable)")
     return("LOW (High Leakage)")
   }
 
+  expect_equal(classify_transport(0.95), "HIGH (Robust)")
   expect_equal(classify_transport(0.90), "HIGH (Robust)")
-  expect_equal(classify_transport(0.85), "HIGH (Robust)")
+  expect_equal(classify_transport(0.89), "MEDIUM (Stable)")
   expect_equal(classify_transport(0.75), "MEDIUM (Stable)")
   expect_equal(classify_transport(0.70), "MEDIUM (Stable)")
+  expect_equal(classify_transport(0.69), "LOW (High Leakage)")
   expect_equal(classify_transport(0.50), "LOW (High Leakage)")
   expect_equal(classify_transport(0.00), "LOW (High Leakage)")
 })
@@ -151,6 +156,37 @@ if (!is.null(csv_path)) {
               100*mean(dt$transport_class == "HIGH (Robust)"),
               100*mean(dt$transport_class == "MEDIUM (Stable)"),
               100*mean(dt$transport_class == "LOW (High Leakage)")))
+}
+
+# ============================================================================
+# 6. F1000 REVIEWER EXAMPLE DATASET INTEGRITY
+# ============================================================================
+# Locks the schema/shape of the small dataset that ships with the repo so the
+# F1000 reviewer reproduction artifact can't silently rot.
+
+example_path <- if (file.exists("f1000_artifacts/example_dataset.csv")) {
+  "f1000_artifacts/example_dataset.csv"
+} else if (file.exists("../f1000_artifacts/example_dataset.csv")) {
+  "../f1000_artifacts/example_dataset.csv"
+} else NULL
+
+if (!is.null(example_path)) {
+  ex <- fread(example_path)
+
+  test_that("Example dataset has the documented schema", {
+    required <- c("review_id", "dataset", "analysis_key", "analysis_name",
+                  "k", "yi", "se", "tau2", "mean_year", "mean_ctrl_risk",
+                  "mean_total_n")
+    expect_equal(setdiff(required, names(ex)), character(0))
+  })
+
+  test_that("Example dataset has at least one row and finite effects", {
+    expect_true(nrow(ex) >= 1)
+    expect_true(all(is.finite(ex$yi)))
+    expect_true(all(is.finite(ex$se) & ex$se > 0))
+    expect_true(all(ex$k >= 2))                # review-level rows pool >=2 studies
+    expect_true(all(ex$mean_ctrl_risk >= 0 & ex$mean_ctrl_risk <= 1))
+  })
 }
 
 cat("All Transportability tests complete.\n")
