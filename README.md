@@ -1,5 +1,7 @@
 # HTA Transportability Engine
 
+[![tests](https://github.com/mahmood726-cyber/hta-transportability/actions/workflows/tests.yml/badge.svg)](https://github.com/mahmood726-cyber/hta-transportability/actions/workflows/tests.yml)
+
 A reproducible R pipeline for assessing **transportability of meta-analytic
 treatment effects** from Pairwise70 systematic reviews to target populations
 approximated by ClinicalTrials.gov (CT.gov) registry covariates.

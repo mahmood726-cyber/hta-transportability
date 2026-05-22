@@ -70,17 +70,22 @@ test_that("Efficacy leakage is (1 - cte_penalty) * 100", {
 # 3. TRANSPORT CLASS ASSIGNMENT TESTS
 # ============================================================================
 
-test_that("Transport class thresholds are correct", {
+test_that("Transport class thresholds match cte_penalty_model.R and paper/cte_manuscript.md", {
+  # HIGH: cte_penalty >= 0.90
+  # MEDIUM: 0.70 <= cte_penalty < 0.90
+  # LOW:   cte_penalty < 0.70
   classify_transport <- function(cte_penalty) {
-    if (cte_penalty >= 0.85) return("HIGH (Robust)")
+    if (cte_penalty >= 0.90) return("HIGH (Robust)")
     if (cte_penalty >= 0.70) return("MEDIUM (Stable)")
     return("LOW (High Leakage)")
   }
 
+  expect_equal(classify_transport(0.95), "HIGH (Robust)")
   expect_equal(classify_transport(0.90), "HIGH (Robust)")
-  expect_equal(classify_transport(0.85), "HIGH (Robust)")
+  expect_equal(classify_transport(0.89), "MEDIUM (Stable)")
   expect_equal(classify_transport(0.75), "MEDIUM (Stable)")
   expect_equal(classify_transport(0.70), "MEDIUM (Stable)")
+  expect_equal(classify_transport(0.69), "LOW (High Leakage)")
   expect_equal(classify_transport(0.50), "LOW (High Leakage)")
   expect_equal(classify_transport(0.00), "LOW (High Leakage)")
 })
