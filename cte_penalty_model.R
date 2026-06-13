@@ -20,6 +20,9 @@ cat("Loading Data...\n")
 dt <- fread(merge_path)
 dt_clean <- dt[!is.na(yi) & !is.na(se) & !is.na(year_shift) & !is.na(enrollment_shift) & !is.na(sex_female_pct)]
 dt_clean[, abs_yi := abs(yi)]
+# Drop null-effect rows: the CTE penalty (predicted / |yi|) is undefined when
+# the original effect magnitude is zero, and dividing by it yields Inf/NaN.
+dt_clean <- dt_clean[abs_yi > 0]
 
 cat(sprintf("Fitting Global Drift Model (N=1000)...\n"))
 set.seed(42)

@@ -1,9 +1,9 @@
 # HTA Methodology Report: The Clinical Transportability Engine (CTE)
-## Quantifying the Generalizability Gap in Global Evidence
+## Quantifying the Generalizability Gap in the Pairwise70 / CT.gov Evidence Base
 
 **Date:** February 15, 2026
 **Data Scope:** 11,974 Meta-Analyses (Pairwise70 + CT.gov)
-**Status:** PRODUCTION COMPLETE
+**Status:** Analysis complete; outputs reproducible from the pipeline scripts.
 
 ---
 
